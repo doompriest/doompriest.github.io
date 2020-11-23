@@ -1,0 +1,1060 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta charset="utf-8">
+		<!--
+		<link rel="shortcut icon" href="images/favicon.png" type="image/png">
+		</link>
+		-->
+		<title>
+				DinoPlanner
+		</title>
+	
+		<script>
+		// String constants declaration
+		const D_NAME             = "Name";
+		const D_HEALTH           = "Health";
+		const D_WEIGHT           = "Weight, kg";
+		const D_SPEED            = "Speed, km/h";
+		const D_AMBUSH           = "Ambush Speed, km/h";
+		const D_HUNGER           = "Hunger";
+		const D_HUNGER_TIME      = "Hunger Time, min";
+		const D_THIRST_TIME      = "Thirst Time, min";
+		const D_STAMINA          = "Stamina";
+		const D_STAMINA_DRAIN    = "Stamina Drain, sec";
+		const D_STAMINA_REGEN    = "Stamina Regen, sec";
+		const D_DAMAGE1          = "Attack1 Damage, N";
+		const D_DAMAGE2          = "Attack2 Damage, N";
+		const D_BLEED            = "Bleed Damage";
+		const D_GROW_TIME        = "Grow Time, min";
+
+		// Class containing all dinosaur stats
+		class Dino {
+			constructor ({name,
+				          health, weight,
+				          speed, ambush,
+				          hunger, hunger_time,
+				          thirst, thirst_time,
+				          stamina, stamina_drain, stamina_regen,
+						  damage1, damage2, bleed,
+						  grow_time,
+						  type_name
+						}) {
+				this.name = name;                                              // dinosaur name:string
+				this.health = health;                                          // health:integer (points)
+				this.weight = weight;                                          // weight:integer (kg)
+				this.speed = speed;                                            // running speed:float (km/h)
+				this.ambush = ambush;                                          // ambush running speed:float (km/h)
+				this.hunger = hunger;                                          // hunger:integer (points)
+				this.hunger_time = hunger_time;                                // hunger time:integer (min)
+				this.thirst = thirst;                                          // unused
+				this.thirst_time = thirst_time;                                // thirst time:integer (min)
+				this.stamina = stamina;                                        // stamina:integer (points)
+				this.stamina_drain = stamina_drain;                            // stamina drain time:integer (sec)
+				this.stamina_regen = stamina_regen;                            // stamina regen time:integer (sec)
+				this.damage1 = damage1;                                        // first attack damage (points)
+				this.damage2 = damage2;                                        // second attack damage (points)
+				this.bleed = bleed;                                            // bleed damage (points)
+				this.grow_time = grow_time;                                    // juv->full growth time:integer (min)
+				this.type_name = type_name;                                    // category name:string
+			}
+		}
+
+		function shitty_debug(str) {
+			document.title = str;
+		}
+
+		// Init function
+		function init_dinos() {
+			dino_array          = [];
+			comparison_mode     = 0;
+			custom_flag         = 0
+			first_dino_id       = 0;
+			second_dino_id      = 0;
+
+			first_custom_dino   = new Dino({
+				name:          "Custom Dino 1",
+				type_name:     "Custom"
+			});
+
+			second_custom_dino  = new Dino({
+				name:          "Custom Dino 2",
+				type_name:     "Custom"
+			});
+
+			// TODO optimize dinos parameters
+
+			// Tier 1 dinos (carnivore)
+			var dino = new Dino({
+				name:          "Utahraptor",
+				health:        1200,
+				weight:        1000,
+				speed:         43.2,
+				ambush:        56.0,
+				hunger:        300,
+				hunger_time:   60,
+				thirst_time:   60,
+				stamina:       300,
+				stamina_drain: 300,
+				damage1:       200,
+				bleed:         20,
+				grow_time:     110,
+				type_name:     "Carnivores: Survival"
+			});
+			dino_array.push(dino);
+
+
+			var dino = new Dino({
+				name:          "Dilophosaurus",
+				health:        1050,
+				weight:        1200,
+				speed:         38.9,
+				ambush:        45.5,
+				hunger:        350,
+				hunger_time:   88,
+				thirst_time:   60,
+				stamina:       150,
+				stamina_drain: 150,
+				stamina_regen: 150,
+				damage1:       150,
+				bleed:         50,
+				grow_time:     110,
+				type_name:     "Carnivores: Survival"
+			});
+			dino_array.push(dino);
+
+			// Tier 2 dinos (carnivore)
+			var dino = new Dino({
+				name:          "Carnotaurus",
+				health:        2170,
+				weight:        2170,
+				speed:         52.2,
+				hunger:        800,
+				hunger_time:   100,
+				thirst_time:   60,
+				stamina:       440,
+				stamina_drain: 220,
+				damage1:       200,
+				bleed:         15,
+				grow_time:     110,
+				type_name:     "Carnivores: Survival"
+			});
+			dino_array.push(dino);
+
+
+			var dino = new Dino({
+				name:          "Ceratosaurus",
+				health:        2250,
+				weight:        2250,
+				speed:         36.6,
+				ambush:        40.3,
+				hunger:        600,
+				hunger_time:   67,
+				thirst_time:   60,
+				stamina:       150,
+				stamina_drain: 150,
+				damage1:       350,
+				bleed:         8,
+				grow_time:     150,
+				type_name:     "Carnivores: Survival"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Allosaurus",
+				health:        2800,
+				weight:        2800,
+				speed:         34.2,
+				ambush:        44.5,
+				hunger:        816,
+				hunger_time:   125,
+				thirst_time:   60,
+				stamina:       200,
+				stamina_drain: 200,
+				stamina_regen: 180,
+				damage1:       300,
+				bleed:         25,
+				grow_time:     180,
+				type_name:     "Carnivores: Survival"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Suchomimus",
+				health:        3600,
+				weight:        3600,
+				speed:         30.9,
+				ambush:        39.3,
+				hunger:        500,
+				hunger_time:   62,
+				thirst_time:   60,
+				stamina:       200,
+				stamina_drain: 200,
+				damage1:       350,
+				bleed:         20,
+				grow_time:     235,
+				type_name:     "Carnivores: Survival"
+			});
+			dino_array.push(dino);
+
+			// Tier 3 dinos (carnivore)
+			var dino = new Dino({
+				name:          "Giganotosaurus",
+				health:        6000,
+				weight:        6450,
+				speed:         30.6,
+				ambush:        39.8,
+				hunger:        2285,
+				hunger_time:   91,
+				thirst_time:   100,
+				stamina:       100,
+				stamina_drain: 50,
+				stamina_regen: 100,
+				damage1:       700,
+				bleed:         40,
+				grow_time:     390,
+				type_name:     "Carnivores: Survival"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Tyrannosaurus",
+				health:        6500,
+				weight:        5800,
+				speed:         33.2,
+				ambush:        43.1,
+				hunger:        2150,
+				hunger_time:   94,
+				thirst_time:   90,
+				stamina_drain: 35,
+				stamina_regen: 107,
+				damage1:       1200,
+				bleed:         10,
+				grow_time:     380,
+				type_name:     "Carnivores: Survival"
+			});
+			dino_array.push(dino);
+
+			// Progression dinos (carnivore)
+			var dino = new Dino({
+				name:          "Austroraptor",
+				health:        250,
+				weight:        250,
+				speed:         51.5,
+				ambush:        51.5,
+				hunger:        65,
+				hunger_time:   65,
+				thirst_time:   45,
+				stamina:       180,
+				stamina_drain: 60,
+				damage1:       60,
+				bleed:         2,
+				grow_time:     120,
+				type_name:     "Carnivores: Progression"
+			});
+			dino_array.push(dino);			
+
+			var dino = new Dino({
+				name:          "Herrerasaurus",
+				health:        500,
+				weight:        500,
+				speed:         55.8,
+				ambush:        61.3,
+				hunger:        60,
+				hunger_time:   120,
+				thirst_time:   60,
+				stamina:       130,
+				stamina_drain: 130,
+				damage1:       50,
+				bleed:         10,
+				grow_time:     80,
+				type_name:     "Carnivores: Progression"
+			});
+			dino_array.push(dino);			
+
+			var dino = new Dino({
+				name:          "Baryonyx",
+				health:        1450,
+				weight:        1450,
+				speed:         41.3,
+				ambush:        49.6,
+				hunger:        326,
+				hunger_time:   66,
+				thirst_time:   60,
+				stamina:       135,
+				stamina_drain: 155,
+				damage1:       150,
+				bleed:         15,
+				grow_time:     180,
+				type_name:     "Carnivores: Progression"
+			});
+			dino_array.push(dino);			
+
+			var dino = new Dino({
+				name:          "Albertosaurus",
+				health:        3000,
+				weight:        3000,
+				speed:         39.2,
+				ambush:        42.1,
+				hunger:        450,
+				hunger_time:   216,
+				thirst_time:   30,
+				stamina:       160,
+				damage1:       424,
+				bleed:         10,
+				grow_time:     180,
+				type_name:     "Carnivores: Progression"
+			});
+			dino_array.push(dino);			
+
+			var dino = new Dino({
+				name:          "Acrocanthosaurus",
+				health:        4790,
+				weight:        4790,
+				speed:         42.6,
+				ambush:        52.2,
+				hunger:        1197,
+				thirst_time:   80,
+				stamina:       110,
+				stamina_drain: 27,
+				damage1:       250,
+				bleed:         25,
+				grow_time:     240,
+				type_name:     "Carnivores: Progression"
+			});
+			dino_array.push(dino);			
+
+			var dino = new Dino({
+				name:          "Spinosaurus",
+				health:        9071,
+				weight:        9071,
+				speed:         29.8,
+				ambush:        41.3,
+				hunger:        2721,
+				hunger_time:   118,
+				thirst_time:   100,
+				stamina:       120,
+				stamina_drain: 30,
+				damage1:       250,
+				bleed:         18,
+				grow_time:     360,
+				type_name:     "Carnivores: Progression"
+			});
+			dino_array.push(dino);			
+
+			// AI dinos (carnivore)
+			var dino = new Dino({
+				name:          "Velociraptor",
+				health:        25,
+				weight:        25,
+				speed:         27.0,
+				hunger:        16,
+				thirst_time:   20,
+				stamina:       100,
+				stamina_drain: 100,
+				damage1:       5,
+				type_name:     "Carnivores: AI"
+			});
+			dino_array.push(dino);
+
+			// Survival dinos (herbivore)
+			var dino = new Dino({
+				name:          "Dryosaurus",
+				health:        500,
+				weight:        700,
+				speed:         41.5,
+				hunger:        80,
+				hunger_time:   80,
+				thirst_time:   30,
+				stamina:       250,
+				stamina_drain: 250,
+				damage1:       20,
+				bleed:         0,
+				grow_time:     30,
+				type_name:     "Herbivores: Survival"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Gallimimus",
+				health:        1000,
+				weight:        1000,
+				speed:         48.6,
+				hunger:        220,
+				thirst_time:   30,
+				stamina:       400,
+				stamina_drain: 400,
+				damage1:       150,
+				bleed:         0,
+				grow_time:     90,
+				type_name:     "Herbivores: Survival"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Pachycephalosaurus",
+				health:        1300,
+				weight:        1300,
+				speed:         40.1,
+				hunger:        110,
+				thirst_time:   60,
+				stamina:       175,
+				stamina_drain: 175,
+				damage1:       350,
+				bleed:         0,
+				grow_time:     130,
+				type_name:     "Herbivores: Survival"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Maiasaura",
+				health:        2868,
+				weight:        2868,
+				speed:         44.6,
+				hunger:        275,
+				hunger_time:   92,
+				thirst_time:   60,
+				stamina:       175,
+				stamina_drain: 175,
+				damage1:       175,
+				bleed:         0,
+				grow_time:     110,
+				type_name:     "Herbivores: Survival"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Diabloceratops",
+				health:        3250,
+				weight:        3250,
+				speed:         31.6,
+				hunger:        155,
+				hunger_time:   31,
+				thirst_time:   50,
+				stamina:       150,
+				stamina_drain: 150,
+				damage1:       350,
+				bleed:         18,
+				grow_time:     180,
+				type_name:     "Herbivores: Survival"
+			});
+			dino_array.push(dino);
+
+
+			var dino = new Dino({
+				name:          "Parasaurolophus",
+				health:        3600,
+				weight:        3600,
+				speed:         34.2,
+				hunger:        840,
+				hunger_time:   70,
+				thirst_time:   60,
+				stamina:       250,
+				stamina_drain: 250,
+				stamina_regen: 250,
+				damage1:       750,
+				damage2:       250,
+				bleed:         0,
+				grow_time:     180,
+				type_name:     "Herbivores: Survival"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Triceratops",
+				health:        8200,
+				weight:        8300,
+				speed:         25.3,
+				hunger:        1500,
+				hunger_time:   94,
+				thirst_time:   100,
+				stamina:       200,
+				stamina_drain: 66,
+				stamina_regen: 68,
+				damage1:       850,
+				damage2:       360,
+				bleed:         25,
+				grow_time:     360,
+				type_name:     "Herbivores: Survival"
+			});
+			dino_array.push(dino);
+
+			// Progression dinos (herbivore)
+			var dino = new Dino({
+				name:          "Stegosaurus",
+				health:        4883,
+				weight:        4883,
+				speed:         26.3,
+				hunger:        172,
+				hunger_time:   86,
+				thirst_time:   50,
+				stamina:       180,
+				stamina_drain: 90,
+				damage1:       1200,
+				bleed:         30,
+				grow_time:     240,
+				type_name:     "Herbivores: Progression"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Ankylosaurus",
+				health:        5443,
+				weight:        5443,
+				speed:         19.3,
+				hunger:        544,
+				hunger_time:   109,
+				thirst_time:   60,
+				stamina:       120,
+				stamina_drain: 120,
+				damage1:       1260,
+				bleed:         0,
+				grow_time:     240,
+				type_name:     "Herbivores: Progression"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Therizinosaurus",
+				health:        4536,
+				weight:        4536,
+				speed:         38.2,
+				hunger:        453,
+				hunger_time:   91,
+				thirst_time:   50,
+				stamina:       130,
+				stamina_drain: 65,
+				damage1:       2800,
+				damage2:       1050,
+				bleed:         0,
+				grow_time:     300,
+				type_name:     "Herbivores: Progression"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Camarasaurus",
+				health:        12000,
+				weight:        12000,
+				speed:         20.7,
+				hunger:        7600,
+				thirst_time:   100,
+				stamina:       350,
+				stamina_drain: 70,
+				stamina_regen: 170,
+				damage1:       5150,
+				damage2:       750,
+				bleed:         0,
+				type_name:     "Herbivores: Progression"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Shantungosaurus",
+				health:        11793,
+				weight:        11793,
+				speed:         32.5,
+				hunger:        1179,
+				hunger_time:   295,
+				thirst_time:   60,
+				stamina:       140,
+				stamina_drain: 46,
+				damage1:       1100,
+				damage2:       250,
+				bleed:         0,
+				grow_time:     360,
+				type_name:     "Herbivores: Progression"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Puertasaurus",
+				health:        49895,
+				weight:        49895,
+				speed:         10.8,
+				hunger:        100,
+				thirst_time:   100,
+				stamina:       100,
+				stamina_drain: 100,
+				damage1:       5000,
+				bleed:         0,
+				type_name:     "Herbivores: Progression"
+			});
+			dino_array.push(dino);
+
+			// AI dinos (herbivore)
+			var dino = new Dino({
+				name:          "Psittacosaurus",
+				health:        25,
+				weight:        50,
+				speed:         10.1,
+				hunger:        15,
+				thirst_time:   20,
+				stamina:       175,
+				stamina_drain: 175,
+				damage1:       0,
+				bleed:         0,
+				type_name:     "Herbivores: AI"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Orodromeus",
+				health:        25,
+				weight:        75,
+				speed:         20.25,
+				hunger:        15,
+				thirst_time:   20,
+				stamina:       100,
+				stamina_drain: 100,
+				damage1:       25,
+				bleed:         0,
+				type_name:     "Herbivores: AI"
+			});
+			dino_array.push(dino);
+
+			var dino = new Dino({
+				name:          "Avaceratops",
+				health:        500,
+				weight:        1000,
+				speed:         29.3,
+				stamina:       130,
+				stamina_drain: 130,
+				damage1:       25,
+				bleed:         0,
+				type_name:     "Herbivores: AI"
+			});
+			dino_array.push(dino);
+
+			dino_array.push(first_custom_dino);
+			dino_array.push(second_custom_dino);
+		}
+
+		function validate_int(value) {
+			var int_val = parseInt(value);
+			if (int_val < (2 ** 32) && int_val >= 0)
+				return int_val;
+		}
+
+		function validate_float(value) {
+			var float_val = parseFloat(value);
+			if (float_val < (10 ** 32) && float_val > 0.0)
+				return float_val.toFixed(2);
+		}
+
+		function get_value_from_cell(cell) {
+			if (cell != null)
+				return cell.value;
+		}
+
+		function get_int_from_cell(cell) {
+			if (cell != null)
+				return validate_int(cell.value);
+		}
+
+		function get_float_from_cell(cell) {
+			if (cell != null)
+				return validate_float(cell.value);
+		}
+
+		// Get dino stats from table (by id)
+		function get_dino_from_table(dino, tab_id) {
+
+			var cell = document.getElementById(tab_id + ":" + D_NAME);
+			dino.name = get_value_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_HEALTH);
+			dino.health = get_int_from_cell(cell);
+			if (dino.health == 0)
+				dino.health = undefined;
+
+			var cell = document.getElementById(tab_id + ":" + D_WEIGHT);
+			dino.weight = get_int_from_cell(cell);
+			if (dino.weight == 0)
+				dino.weight = undefined;
+
+			var cell = document.getElementById(tab_id + ":" + D_SPEED);
+			dino.speed = get_float_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_AMBUSH);
+			dino.ambush = get_float_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_HUNGER);
+			dino.hunger = get_int_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_HUNGER_TIME);
+			dino.hunger_time = get_int_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_THIRST_TIME);
+			dino.thirst_time = get_int_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_STAMINA);
+			dino.stamina = get_int_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_STAMINA_DRAIN);
+			dino.stamina_drain = get_int_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_STAMINA_REGEN);
+			dino.stamina_regen = get_int_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_DAMAGE1);
+			dino.damage1 = get_float_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_DAMAGE2);
+			dino.damage2 = get_float_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_BLEED);
+			dino.bleed = get_float_from_cell(cell);
+
+			var cell = document.getElementById(tab_id + ":" + D_GROW_TIME);
+			dino.grow_time = get_int_from_cell(cell);
+
+		}
+
+		// Create table row
+		function create_row() {
+			var table = arguments[0];
+			var tr = table.insertRow();
+
+			for (var i = 1; i < arguments.length - 1; i++) {
+				var td = document.createElement(arguments[arguments.length - 1]);
+
+				
+				if (arguments[arguments.length - 1] == "td" &&
+					comparison_mode == 0 &&
+					i == 2 &&
+					custom_flag == 1) {
+					var text_area = document.createElement("textarea");
+					text_area.value = arguments[i];
+					text_area.disabled = false;
+					text_area.id = arguments[0].id + ":" + arguments[i - 1];
+					td.appendChild(text_area);
+				} else {
+					td.innerHTML = arguments[i];
+				}
+				
+				tr.appendChild(td);
+			}
+		}
+
+		// Create table
+		function create_dino_table(tab_id, dino_id) {
+			var mytab = document.getElementById(tab_id);
+			
+			if (comparison_mode == 0)
+			{
+				var dino = dino_array[dino_id];
+				if (dino.type_name == "Custom")
+					custom_flag = 1;
+
+				create_row(mytab, "Parameter", "Value", "th");
+
+				// general
+				create_row(mytab, D_NAME, dino.name, "td");
+				create_row(mytab, D_HEALTH, dino.health, "td");
+				create_row(mytab, D_WEIGHT, dino.weight, "td");
+				// speed
+				create_row(mytab, D_SPEED, dino.speed, "td");
+				create_row(mytab, D_AMBUSH, dino.ambush, "td");
+				// hunger
+				create_row(mytab, D_HUNGER, dino.hunger, "td");
+				create_row(mytab, D_HUNGER_TIME, dino.hunger_time, "td");
+				// thirst
+				create_row(mytab, D_THIRST_TIME, dino.thirst_time, "td");
+				// stamina
+				create_row(mytab, D_STAMINA, dino.stamina, "td");
+				create_row(mytab, D_STAMINA_DRAIN, dino.stamina_drain, "td");
+				create_row(mytab, D_STAMINA_REGEN, dino.stamina_regen, "td");
+				// attack
+				create_row(mytab, D_DAMAGE1, dino.damage1, "td");
+				create_row(mytab, D_DAMAGE2, dino.damage2, "td");
+				create_row(mytab, D_BLEED, dino.bleed, "td");
+				// growth
+				create_row(mytab, D_GROW_TIME, dino.grow_time, "td");
+
+				if (dino.type_name == "Custom")
+					custom_flag = 0;
+			
+			} else {
+				var first_dino = dino_array[dino_id];
+
+				// get another dino stats from the global vars
+				if (dino_id == first_dino_id) {
+					var second_dino = dino_array[second_dino_id];
+				}
+				else {
+					var second_dino = dino_array[first_dino_id];
+				}
+
+				create_row(mytab, "Parameter", "Value", "th");
+
+				// general
+				create_row(mytab, D_NAME, first_dino.name/* + " VS " + second_dino.name*/, "td");
+
+				
+				if (first_dino.health != undefined && second_dino.health != undefined) {
+					create_row(mytab, D_HEALTH, first_dino.health, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.health >= second_dino.health) ? 
+																	"#00AA00" : "#FF0000";
+				}
+				
+				if (first_dino.weight != undefined && second_dino.weight != undefined) {
+					create_row(mytab, D_WEIGHT, first_dino.weight, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.weight >= second_dino.weight) ? 
+																	"#00AA00" : "#FF0000";
+				}
+				// speed
+				if (first_dino.speed != undefined && second_dino.speed != undefined) {
+					create_row(mytab, D_SPEED, first_dino.speed, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.speed >= second_dino.speed) ? 
+																	"#00AA00" : "#FF0000";
+				}
+				
+				if (first_dino.ambush != undefined && second_dino.ambush != undefined) {
+					create_row(mytab, D_AMBUSH, first_dino.ambush, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.ambush >= second_dino.ambush) ? 
+																	"#00AA00" : "#FF0000";					
+				}
+				// hunger
+				if (first_dino.hunger != undefined && second_dino.hunger != undefined) {
+					create_row(mytab, D_HUNGER, first_dino.hunger, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.hunger <= second_dino.hunger) ? 
+																	"#00AA00" : "#FF0000";					
+				}
+				
+				if (first_dino.hunger_time != undefined && second_dino.hunger_time != undefined) {
+					create_row(mytab, D_HUNGER_TIME, first_dino.hunger_time, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.hunger_time >= second_dino.hunger_time) ? 
+																	"#00AA00" : "#FF0000";
+				}
+				// thirst
+				if (first_dino.thirst_time != undefined && second_dino.thirst_time != undefined) {
+					create_row(mytab, D_THIRST_TIME, first_dino.thirst_time, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.thirst_time >= second_dino.thirst_time) ? 
+																	"#00AA00" : "#FF0000";
+				}
+				// stamina
+				if (first_dino.stamina != undefined && second_dino.stamina != undefined) {
+					create_row(mytab, D_STAMINA, first_dino.stamina, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.stamina >= second_dino.stamina) ? 
+																	"#00AA00" : "#FF0000";
+				}
+
+				if (first_dino.stamina_drain != undefined && second_dino.stamina_drain != undefined) {
+					create_row(mytab, D_STAMINA_DRAIN, first_dino.stamina_drain, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.stamina_drain >= second_dino.stamina_drain) ? 
+																	"#00AA00" : "#FF0000";
+				}
+
+				if (first_dino.stamina_regen != undefined && second_dino.stamina_regen != undefined) {
+					create_row(mytab, D_STAMINA_REGEN, first_dino.stamina_regen, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.stamina_regen <= second_dino.stamina_regen) ? 
+																	"#00AA00" : "#FF0000";
+				}
+
+				// attack
+				if (first_dino.damage1 != undefined && second_dino.damage1 != undefined &&
+					first_dino.weight != undefined && second_dino.weight != undefined) {
+					var atk1 = parseFloat((first_dino.damage1 * (first_dino.weight / second_dino.weight)).toFixed(2));
+					var atk2 = parseFloat((second_dino.damage1 * (second_dino.weight / first_dino.weight)).toFixed(2));
+					create_row(mytab, D_DAMAGE1, atk1, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (atk1 >= atk2) ? 
+																	"#00AA00" : "#FF0000";
+				}
+
+				if (first_dino.damage2 != undefined && second_dino.damage2 != undefined &&
+					first_dino.weight != undefined && second_dino.weight != undefined) {
+					var atk1 = parseFloat((first_dino.damage2 * (first_dino.weight / second_dino.weight)).toFixed(2));
+					var atk2 = parseFloat((second_dino.damage2 * (second_dino.weight / first_dino.weight)).toFixed(2));
+					create_row(mytab, D_DAMAGE2, atk1, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (atk1 >= atk2) ? 
+																	"#00AA00" : "#FF0000";
+				}
+
+				if (first_dino.bleed != undefined && second_dino.bleed != undefined &&
+					first_dino.weight != undefined && second_dino.weight != undefined) {
+					var atk1 = parseFloat((first_dino.bleed * (first_dino.weight / second_dino.weight)).toFixed(2));
+					var atk2 = parseFloat((second_dino.bleed * (second_dino.weight / first_dino.weight)).toFixed(2));
+					create_row(mytab, D_BLEED, atk1, "td");
+					mytab.rows[mytab.rows.length - 1].style.color = (atk1 >= atk2) ? 
+																	"#00AA00" : "#FF0000";
+				}
+				
+				// growth
+				if (first_dino.grow_time != undefined && second_dino.grow_time != undefined) {
+					create_row(mytab, D_GROW_TIME, first_dino.grow_time, "td");		
+					mytab.rows[mytab.rows.length - 1].style.color = (first_dino.grow_time <= second_dino.grow_time) ? 
+																	"#00AA00" : "#FF0000";		
+				}
+			}
+		}
+
+		function clear_dino_table(tab_id) {
+			var mytab = document.getElementById(tab_id);
+
+			var row_count = mytab.rows.length;
+			while (--row_count >= 0)
+				mytab.deleteRow(row_count);
+		}
+
+		function create_dino_select(form_id, tab_id) {
+			var my_select = document.createElement("select");
+
+			for (var i = 0; i < dino_array.length; i++) {
+				if (i == 0 || dino_array[i - 1].type_name != dino_array[i].type_name) {
+					var my_optgroup = document.createElement("optgroup");
+					my_optgroup.label = dino_array[i].type_name;
+					my_select.appendChild(my_optgroup);
+				}
+
+				var opt = new Option(dino_array[i].name, i);
+				my_select.add(opt);
+			}
+
+			// select onchange function
+			my_select.addEventListener("change", function() {
+
+				// save custom dino parameters
+				if (dino_array[first_dino_id].type_name == "Custom") {
+					get_dino_from_table(dino_array[first_dino_id], "tab1");
+				}
+				if (dino_array[second_dino_id].type_name == "Custom") {
+					get_dino_from_table(dino_array[second_dino_id], "tab2");
+				}
+
+				clear_dino_table("tab1");
+				clear_dino_table("tab2");
+				
+				var opt = my_select.options[my_select.selectedIndex].value;
+				if (tab_id == "tab1")
+					first_dino_id = parseInt(opt);
+				else
+					second_dino_id = parseInt(opt);
+				create_dino_table("tab1", first_dino_id);
+				create_dino_table("tab2", second_dino_id);
+			});
+			document.getElementById(form_id).appendChild(my_select);
+		}
+
+		function activate_mode_switcher() {
+			var button = document.getElementById("modeswitcher");
+
+			// btn onchange function
+			button.addEventListener("click", function() {
+				if (comparison_mode == 0) {
+					comparison_mode = 1;
+					button.value = "Normal Mode"
+				} else {
+					comparison_mode = 0;
+					button.value = "Comparison Mode"
+				}
+
+				// save custom dino parameters
+				if (comparison_mode == 1) {
+					if (dino_array[first_dino_id].type_name == "Custom") {
+						get_dino_from_table(dino_array[first_dino_id], "tab1");
+					}
+					if (dino_array[second_dino_id].type_name == "Custom") {
+						get_dino_from_table(dino_array[second_dino_id], "tab2");
+					}
+				}
+
+				clear_dino_table("tab1");
+				clear_dino_table("tab2");
+				create_dino_table("tab1", first_dino_id);
+				create_dino_table("tab2", second_dino_id);
+			});
+		}
+
+		</script>
+		
+		
+  <style type="text/css">
+	TABLE {
+		border-collapse: collapse;
+		font-family: Consolas,monaco,monospace; 
+	}
+	TD, TH {
+		padding: 3px; 
+		border: 1px solid black;
+	}
+	TH {
+		background: #AAAAAA;
+	}
+	BODY {
+		min-height: 100%;
+	}
+
+	#glob {
+		width: 100%;
+	}
+
+	#glob TD {
+		vertical-align: top;
+	}
+   	textarea {
+    height: 16px;
+    resize: none;
+   	} 
+  </style>	
+	</head>
+	<body bgcolor="#DDDDDD">
+		<h1 align="center"> The Isle Dino Stats Comparison </h1>
+
+		<script>
+			init_dinos();
+		</script>
+
+		<table id="glob">
+		<tr>
+		<td>
+			<h2 align="left">First Dino</h2>
+			<table id="tab1" align="left">
+			</table>
+			<script>
+				create_dino_table("tab1", first_dino_id);
+			</script>		
+		</td>
+
+		<td>
+			<h2 align="right">Second Dino</h2>
+			<table id="tab2" align="right">
+			</table>
+			<script>
+				create_dino_table("tab2", second_dino_id);
+			</script>
+		</td>
+		</tr>
+
+		<tr>
+		<td>
+			<form id="DinoSelectForm1" align="left">
+				<script>
+					create_dino_select("DinoSelectForm1", "tab1");
+				</script>
+			</form>
+		</td>
+
+		<td>
+			<form id="DinoSelectForm2" align="right">
+				<script>
+					create_dino_select("DinoSelectForm2", "tab2");
+				</script>
+			</form>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2">
+			<form id="ButtonForm" align="center">
+				<p style="text-align: center"><input type="button" value="Comparison Mode" id="modeswitcher"></p>
+			</form>		
+			<script>
+				activate_mode_switcher();
+			</script>
+		</td>
+		</tr>
+		</table>
+    </body>
+</html>
