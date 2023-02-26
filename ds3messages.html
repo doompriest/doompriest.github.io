@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta charset="utf-8">
+		<title>
+				Dark Souls III Message Constructor
+		</title>
+	
+		<script>
+		// declarations
+
+		// english string constants
+		const EN_DICT = {
+			"Creatures": "enemy;monster;mob enemy;tough enemy;critical foe;Hollow;pilgrim;prisoner;monstrosity;skeleton;ghost;beast;lizard;bug;grub;crab;dwarf;giant;demon;dragon;knight;sellsword;warrior;herald;bandit;assassin;sorcerer;pyromancer;cleric;deprived;sniper;duo;trio;you;you bastard;good fellow;saint;wretch;charmer;poor soul;oddball;nimble one;laggard;moneybags;beggar;miscreant;liar;fatty;beanpole;youth;elder;old codger;old dear;merchant;artisan;master;sage;champion;Lord of Cinder;king;queen;prince;princess;angel;god;friend;ally;spouse;covenantor;Phantom;Dark Spirit".split(';'),
+
+			"Objects": "bonfire;ember;fog wall;lever;contraption;key;trap;torch;door;treasure;chest;something;quite something;rubbish;filth;weapon;shield;projectile;armor;item;ring;ore;coal;transposing kiln;scroll;umbral ash;throne;rite;coffin;cinder;ash;moon;eye;brew;soup;message;bloodstain;illusion".split(';'),
+
+			"Techniques": "close-ranged battle;ranged battle;eliminating one at a time;luring it out;beating to a pulp;ambush;pincer attack;hitting them in one swoop;dual-wielding;stealth;mimicry;fleeing;charging;jumping off;dashing through;circling around;trapping inside;rescue;Skill;sorcery;pyromancy;miracles;pure luck;prudence;brief respite;play dead".split(';'),
+
+			"Actions": "jog;dash;rolling;backstepping;jumping;attacking;jump attack;dash attack;counter attack;stabbing in the back;guard stun & stab;plunging attack;sweeping attack;shield breaking;blocking;parrying;locking-on;no lock-on;two-handing;gesture;control;destroy".split(';'),
+
+			"Geography": "boulder;lava;poison gas;enemy horde;forest;swamp;cave;shortcut;detour;hidden path;secret passage;dead end;labyrinth;hole;bright spot;dark spot;open area;tight spot;safe zone;danger zone;sniper spot;hiding place;illusory wall;ladder;lift;gorgeous view;looking away;overconfidence;slip-up;oversight;fatigue;bad luck;inattention;loss of stamina;chance encounter;planned encounter".split(';'),
+
+			"Orientation": "front;back;left;right;up;down;below;above;behind".split(';'),
+
+			"Body parts": "head;neck;stomach;back;arm;finger;leg;rear;tail;wings;anywhere;tongue;left arm;right arm;thumb;indexfinger;longfinger;ringfinger;smallfinger;right leg;left leg;right side;left side;pincer;wheel;core;mount".split(';'),
+
+			"Attribute": "regular;strike;thrust;slash;magic;crystal;fire;chaos;lightning;blessing;dark;critical hits;bleeding;poison;toxic;frost;curse;equipment breakage".split(';'),
+
+			"Concepts": "chance;quagmire;hint;secret;sleeptalk;happiness;misfortune;life;death;demise;joy;fury;agony;sadness;tears;loyalty;betrayal;hope;despair;fear;losing sanity;victory;defeat;sacrifice;light;dark;bravery;confidence;vigor;revenge;resignation;overwhelming;regret;pointless;man;woman;friendship;love;recklessness;composure;guts;comfort;silence;deep;dregs".split(';'),
+
+			"Musings": "good luck;fine work;I did it!;I've failed...;here!;not here!;I can't take this...;lonely...;don't you dare!;do it!;look carefully;listen carefully;think carefully;this place again?;now the real fight begins;you don't deserve this;keep moving;pull back;give it up;don't give up;help me...;impossible...;bloody expensive...;let me out of here...;stay calm;like a dream...;seems familiar...;are you ready?;it'll happen to you too;praise the Sun!;may the flames guide thee".split(';')
+		};
+
+		const EN_CATEGORIES = Object.keys(EN_DICT);
+
+		const EN_TEMPLATES = "*** ahead;No *** ahead;*** required ahead;be wary of ***;try ***;Could this be a ***?;If only I had a ***...;Visions of ***...;Time for ***;***;***!;***?;***...;Huh. It's a ***;praise the ***!;Let there be ***;Ahh, ***...".split(';');
+
+		const EN_CONJUNCTIONS = "and then;but;therefore;in short;or;only;by the way;so to speak;all the more;,".split(';');
+
+		const EN_LINES = "Single line;Two lines".split(';');
+
+		// russian string constants
+		const RU_DICT = {
+			"Существа": "враг;монстр;группа врагов;сильный враг;опасный враг;опустошенный;пилигрим;заключенный;чудовище;скелет;призрак;зверь;ящерица;жук;личинка;краб;карлик;гигант;демон;дракон;рыцарь;наемник;воин;глашатай;бандит;убийца;чародей;пиромант;клирик;нищий;стрелок;двое;трое;ты;ты, гад;ваше благородие;святой;обезображенный;чародeй;несчастная душа;чудак;ловкач;увалень;богач;нищий;еретик;лжец;толстяк;верзила;юноша;старец;старый чудак;старуха;торговец;ремесленник;мастер;мудрец;чемпион;повелитель пепла;король;королева;принц;принцесса;ангел;бог;друг;союзник;супруг;участник ковенанта;фантом;темный дух".split(';'),
+
+			"Объекты": "костер;уголь;стена тумана;рычаг;устройство;ключ;ловушка;факел;дверь;клад;сундук;нечто;нечто потрясающее;мусор;грязь;оружие;щит;снаряд;доспехи;предмет;кольцо;руда;угoль;транспозиционная печь;свиток;чей-то пепел;трон;ритуал;гроб;зола;пепел;луна;зрачок;спиртное;суп;послание;кровавое пятно;иллюзия".split(';'),
+
+			"Техники": "ближний бой;дальний бой;уничтожать по одному;выманить;жестокое избиение;атаковать из засады;зажать в клещи;атаковать всех с налета;оружие в каждой руке;скрытность;мимикрия;бегство;броситься в атаку;спрыгнуть;прорваться;движение по кругу;заточение;спасение;навык;чары;пиромантия;чудеса;чистая удача;благоразумие;краткая передышка;притвориться мертвым".split(';'),
+
+			"Действия": "толчок;рывок;перекат;отскок;прыжок;атаковать;атаковать в прыжке;атаковать в рывке;контратаковать;удар в спину;оглуш. при защите и удар;удар в падении;сметающая атака;пробить щит;блок;парирование;захватить цель;без захвата цели;двуручное;жест;управление;уничтожить".split(';'),
+
+			"География": "булыжник;лава;ядовитый газ;орда врагов;лес;болото;пещера;короткий путь;обход;тайная тропа;короткий пyть;тупик;лабиринт;дыра;светлое место;темное место;простор;теснина;безопасная зона;опасная зона;позиция для стрельбы;укрытие;призрачная стена;лестница;подъемник;роскошный вид;взгляд в сторону;самоуверенность;промах;упущение;утомление;невезение;невнимательность;потеря выносливости;случайная встреча;ожидаемая встреча".split(';'),
+
+			"Ориентация": "вперед;назад;влево;вправо;вверх;вниз;внизу;наверху;сзади".split(';'),
+
+			"Части тела": "голова;шея;живот;спина;рука;палец;нога;зад;хвост;крылья;все;язык;правая рука;левая рука;большой палец;указательный палец;средний палец;безымянный палец;мизинец;правая нога;левая нога;правая сторона;левая сторона;клешня;колесо;центр;всадник".split(';'),
+
+			"Характеристики": "обычный удар;дробящий удар;колющий удар;рубящий удар;магия;кристалл;огонь;хаос;молния;благословение;тьма;критические удары;кровотечение;яд;токсин;мороз;проклятие;поломка снаряжения".split(';'),
+
+			"Понятия": "шанс;затруднение;совет;секрет;сонный бред;счастье;неудача;жизнь;смерть;погибель;ярость;радость;агония;печаль;слезы;преданность;вероломство;надежда;отчаяние;страх;помешательство;победа;поражение;жертва;свет;тьма;смелость;уверенность;жизненная сила;месть;смирение;ошеломление;сожаление;бесцельность;мужчина;женщина;дружба;любовь;безрассудство;спокойствие;сила духа;удобство;тишина;глубина;отбросы".split(';'),
+
+			"Размышления": "удачи;отлично;получилось;не вышло;сюда;не сюда;это невыносимо;одиноко...;не смей;действуй;смотри внимательно;слушай внимательно;подумай хорошенько;снова это место;теперь начнется сражение;ты этого не заслуживаешь;не останавливайся;отступи;сдавайся;не сдавайся;помогите;невозможно;чертовски дорого;выпустите меня отсюда;сохраняй спокойствие;словно во сне;выглядит знакомым...;ты готов;это случится и с тобой;восславь Солнце;да осветит пламя твой путь".split(';')
+		};
+
+		const RU_CATEGORIES = Object.keys(RU_DICT);
+		
+		const RU_TEMPLATES = "впереди ***;впереди отсутствует ***;впереди требуется ***;осторожно: ***;может помочь ***;может быть, это ***?;будь у меня ***...;видение — ***...;время пришло — ***...;***;***!;***?;***...;ха, это ***...;слава, ***!;да будет ***;ах, ***...".split(';');
+
+		const RU_CONJUNCTIONS = "и тогда;но;так что;короче;или;только;кстати;так сказать;тем более;,".split(';');
+
+		const RU_LINES = "Одна строка;Две строки".split(';');
+
+		function shitty_debug(str)
+		{
+			document.title = str;
+		}
+
+		function select_language(is_russian)
+		{
+			if (is_russian == 1)
+			{
+				g_categories = RU_CATEGORIES;
+				g_templates = RU_TEMPLATES;
+				g_conjunctions = RU_CONJUNCTIONS;
+				g_dict = RU_DICT;
+				g_lines = RU_LINES;
+			}
+			else
+			{
+				g_categories = EN_CATEGORIES;
+				g_templates = EN_TEMPLATES;
+				g_conjunctions = EN_CONJUNCTIONS;
+				g_dict = EN_DICT;
+				g_lines = EN_LINES;
+			}
+			g_russian = is_russian;
+		}
+
+		// Init function
+		function init_stuff() {
+			g_second_line = 0;
+			g_template_select = [];
+			g_category_select = [];
+			g_word_select = [];
+			select_language(0);
+		}
+
+		function draw_message()
+		{
+			var out = document.getElementById("result");
+			var text1 = g_templates[g_template_select[0].selectedIndex].replaceAll('***', g_dict[g_categories[g_category_select[0].selectedIndex]][g_word_select[0].selectedIndex]);
+
+			if (g_second_line == 1)
+			{
+				var conj = g_conjunctions[g_conjunction_select.selectedIndex];
+				if (conj.localeCompare(",") == 0)
+					conj = conj + "\n";
+				else
+					conj = "\n" + conj + " ";
+
+				var text2 = g_templates[g_template_select[1].selectedIndex].replaceAll('***', g_dict[g_categories[g_category_select[1].selectedIndex]][g_word_select[1].selectedIndex]);
+
+				out.textContent = text1 + conj + text2;
+			}
+			else
+			{
+				out.textContent = text1;
+			}		
+		}
+
+		function select_element(selector, array, arr_index)
+		{
+			selector.value = array[arr_index];
+			selector.selectedIndex = arr_index;
+			selector.dispatchEvent(new Event('change'));
+		}
+
+		// language selector
+		function create_language_select(form_id, dict_id) {
+			var language_select = document.createElement("select");
+
+			for (var i = 0; i < dict_id.length; i++) {
+				var opt = new Option(dict_id[i], i);
+				language_select.add(opt);
+			}
+
+			// select onchange function
+			language_select.addEventListener("change", function() {
+				select_language (language_select.selectedIndex);
+
+				document.getElementById("TemplateSelectForm1").removeChild(g_template_select[0]);
+				create_template_select("TemplateSelectForm1", g_templates, 0);
+
+				document.getElementById("CategorySelectForm1").removeChild(g_category_select[0]);
+				create_category_select("CategorySelectForm1", g_categories, 0);
+
+				document.getElementById("WordSelectForm1").removeChild(g_word_select[0]);
+				create_word_select("WordSelectForm1", g_dict[g_categories[g_category_select[0].selectedIndex]], 0);
+
+
+				if (g_second_line == 1)
+				{
+					document.getElementById("ConjunctionSelectForm").removeChild(g_conjunction_select);
+					/*create_conjunction_select ("ConjunctionSelectForm", g_conjunctions);*/
+
+					document.getElementById("TemplateSelectForm2").removeChild(g_template_select[1]);
+					/*create_template_select("TemplateSelectForm2", g_templates, 1);*/
+
+					document.getElementById("CategorySelectForm2").removeChild(g_category_select[1]);
+					/*create_category_select("CategorySelectForm2", g_categories, 1);*/
+
+					document.getElementById("WordSelectForm2").removeChild(g_word_select[1]);
+					/*create_word_select("WordSelectForm2", g_dict[g_categories[g_category_select[1].selectedIndex]], 1);*/
+
+					g_second_line = 0;
+				}
+
+
+				document.getElementById("StructureSelectForm").removeChild(g_struct_select);
+				create_structure_select("StructureSelectForm", g_lines);
+				draw_message ();
+			});
+			document.getElementById(form_id).appendChild(language_select);
+		}
+
+		// template selector
+		function create_template_select(form_id, dict_id, element_id) {
+			var template_select = document.createElement("select");
+
+			for (var i = 0; i < dict_id.length; i++) {
+				var opt = new Option(dict_id[i], i);
+				template_select.add(opt);
+			}
+
+			// select onchange function
+			template_select.addEventListener("change", function() {
+				draw_message ();
+			});
+			document.getElementById(form_id).appendChild(template_select);
+			g_template_select[element_id] = template_select;
+		}
+
+		// category selector
+		function create_category_select(form_id, dict_id, element_id) {
+			var category_select = document.createElement("select");
+
+			for (var i = 0; i < dict_id.length; i++) {
+				var opt = new Option(dict_id[i], i);
+				category_select.add(opt);
+			}
+
+			// select onchange function
+			if (element_id == 0)
+			{
+				category_select.addEventListener("change", function() {
+					document.getElementById("WordSelectForm1").removeChild(g_word_select[0]);
+					create_word_select("WordSelectForm1", g_dict[g_categories[category_select.selectedIndex]], 0);
+					draw_message ();
+				});
+			}
+			else
+			{
+				category_select.addEventListener("change", function() {
+					document.getElementById("WordSelectForm2").removeChild(g_word_select[1]);
+					create_word_select("WordSelectForm2", g_dict[g_categories[category_select.selectedIndex]], 1);
+					draw_message ();
+				});
+			}
+
+			document.getElementById(form_id).appendChild(category_select);
+			g_category_select[element_id] = category_select;
+		}
+
+		// word selector
+		function create_word_select(form_id, dict_id, element_id) {
+			var word_select = document.createElement("select");
+
+			for (var i = 0; i < dict_id.length; i++) {
+				var opt = new Option(dict_id[i], i);
+				word_select.add(opt);
+			}
+
+			// select onchange function
+			word_select.addEventListener("change", function() {
+				draw_message ();
+			});
+			document.getElementById(form_id).appendChild(word_select);
+			g_word_select[element_id] = word_select;
+		}
+
+		// conjunction selector
+		function create_conjunction_select(form_id, dict_id) {
+			g_conjunction_select = document.createElement("select");
+
+			for (var i = 0; i < dict_id.length; i++) {
+				var opt = new Option(dict_id[i], i);
+				g_conjunction_select.add(opt);
+			}
+
+			// select onchange function
+			g_conjunction_select.addEventListener("change", function() {
+				draw_message ();
+			});
+			document.getElementById(form_id).appendChild(g_conjunction_select);
+		}
+
+		// message structure selector
+		function create_structure_select(form_id, dict_id) {
+			g_struct_select = document.createElement("select");
+
+			for (var i = 0; i < dict_id.length; i++) {
+				var opt = new Option(dict_id[i], i);
+				g_struct_select.add(opt);
+			}
+
+			// select onchange function
+			g_struct_select.addEventListener("change", function() {
+				if (g_struct_select.selectedIndex == 1)
+				{
+					if (g_second_line == 0)
+					{
+						create_conjunction_select ("ConjunctionSelectForm", g_conjunctions);
+						create_template_select("TemplateSelectForm2", g_templates, 1);
+						create_category_select("CategorySelectForm2", g_categories, 1);
+						create_word_select("WordSelectForm2", g_dict[g_categories[g_category_select[1].selectedIndex]], 1);
+					}
+					g_second_line = 1;
+				}
+				else
+				{
+					if (g_second_line == 1)
+					{
+						document.getElementById("ConjunctionSelectForm").removeChild(g_conjunction_select);
+						document.getElementById("WordSelectForm2").removeChild(g_word_select[1]);
+						document.getElementById("CategorySelectForm2").removeChild(g_category_select[1]);
+						document.getElementById("TemplateSelectForm2").removeChild(g_template_select[1]);
+					}
+					g_second_line = 0;
+				}
+				draw_message ();
+			});
+			document.getElementById(form_id).appendChild(g_struct_select);
+		}
+
+		// random message
+		function generate_random_message()
+		{
+			// random template 1
+			select_element (g_template_select[0],
+							g_templates,
+							Math.floor(Math.random() * g_templates.length));
+			// random category 1
+			select_element (g_category_select[0],
+							g_categories,
+							Math.floor(Math.random() * g_categories.length));
+			// random word 1
+			select_element (g_word_select[0],
+							g_dict[g_categories[g_category_select[0].selectedIndex]],
+							Math.floor(Math.random() * g_dict[g_categories[g_category_select[0].selectedIndex]].length));
+
+			// random structure
+			select_element (g_struct_select,
+							g_lines,
+							Math.floor(Math.random() * g_lines.length));
+
+			if (g_second_line == 1)
+			{
+				// random conjunction
+				select_element (g_conjunction_select,
+								g_conjunctions,
+								Math.floor(Math.random() * g_conjunctions.length));
+				// random template 2
+				select_element (g_template_select[1],
+								g_templates,
+								Math.floor(Math.random() * g_templates.length));
+				// random category 2
+				select_element (g_category_select[1],
+								g_categories,
+								Math.floor(Math.random() * g_categories.length));
+				// random word 2
+				select_element (g_word_select[1],
+								g_dict[g_categories[g_category_select[1].selectedIndex]],
+								Math.floor(Math.random() * g_dict[g_categories[g_category_select[1].selectedIndex]].length));
+			}
+		}
+
+		</script>	
+  <style type="text/css">
+	TABLE {
+		border-collapse: collapse;
+		/*font-family: Consolas,monaco,monospace; */
+	}
+	TD, TH {
+		padding: 3px; 
+		border: 1px solid black;
+	}
+	TH {
+		background: #AAAAAA;
+	}
+	BODY {
+		min-height: 100%;
+		background-color: #5F5F55;
+		background-image: url("pic/ash.jpg");
+		opacity: 0.9;
+	}
+
+	#glob {
+		width: 100%;
+	}
+
+	#glob TD {
+		vertical-align: top;
+	}
+
+	select {
+		font-family: serif;
+		font-size: large;
+		border: 1px black;
+		padding: 2px;
+	}
+
+   	textarea {
+    	resize: none;
+    	text-align:left;
+    	border: 2px solid white;
+    	color: white;
+    	background: #111111;
+    	padding-left: 8px;
+    	font-family: serif;
+    	font-size: large;
+    	line-height:150%;
+   	} 
+
+   	.btnDiv {
+   		align: center;
+   	}
+
+   	button {
+		height: 100px;
+		width: 100px;
+		border-radius: 50%;
+		border: 2px solid white;
+		background: url("pic/pointless.jpg") no-repeat;
+		background-size: contain;
+   	}
+
+   	button:active {
+   		border: 0px;
+   	}
+
+  </style>	
+	</head>
+	<body>
+		<h1 align="center" style="font-family: serif; color: #CC1100"> Dark Souls III Message Constructor </h1>
+
+		<script>
+			init_stuff();
+		</script>
+
+		<tr>
+		<td>
+			<form id="LanguageSelectForm" align="center">
+				<script>
+					create_language_select("LanguageSelectForm", "EN;RU".split(';'));
+				</script>
+			</form>
+			<br><br>
+			<form id="TemplateSelectForm1" align="left">
+				<script>
+					create_template_select("TemplateSelectForm1", g_templates, 0);
+				</script>
+			</form>
+			<br>
+			<form id="CategorySelectForm1" align="left">
+				<script>
+					create_category_select("CategorySelectForm1", g_categories, 0);
+				</script>
+			</form>
+			<br>
+			<form id="WordSelectForm1" align="left">
+				<script>
+					create_word_select("WordSelectForm1", g_dict[g_categories[g_category_select[0].selectedIndex]], 0);
+				</script>
+			</form>
+			<br>
+			<form id="StructureSelectForm" align="center">
+				<script>
+					create_structure_select("StructureSelectForm", g_lines);
+				</script>
+			</form>
+			<br>
+			<form id="ConjunctionSelectForm" align="left">
+			</form>
+			<br>
+			<form id="TemplateSelectForm2" align="left">
+			</form>
+			<br>
+			<form id="CategorySelectForm2" align="left">
+			</form>
+			<br>
+			<form id="WordSelectForm2" align="left">
+			</form>
+		</td>
+		</tr>
+		<br><br><br>
+		<form id="Output" align="center">
+			<div>
+				<textarea id="result" cols=60 rows=3 readonly>
+				</textarea>
+			</div>
+			<script>
+				draw_message ();
+			</script>
+		</form>
+		<br><br>
+		<form id="RandButton" align="center">
+			<div class="btnDiv">
+				<button type="button" onclick="generate_random_message()">
+				</button>
+			</div>
+		</form>
+    </body>
+</html>
